@@ -9,10 +9,9 @@ application:
       backend: file:///lzcapp/pkg/content/licenses/
     - location: /
       backend: http://pretix:80/
-
 services:
   pretix:
-    # upstream: docker.io/pretix/standalone:2026.9.0
+    # upstream: pretix/standalone:2026.9.0
     image: docker.1ms.run/pretix/standalone:2026.9.0
     environment:
       - TZ=Asia/Shanghai
@@ -43,8 +42,8 @@ services:
     depends_on:
       - pretix-db
   pretix-db:
-    # upstream: library/postgres:17.2
-    image: docker.1ms.run/library/postgres:17.2
+    # upstream: library/postgres:17.11
+    image: docker.1ms.run/library/postgres:17.11
     environment:
       - POSTGRES_USER=pretix
       - POSTGRES_PASSWORD={{PASSWORD_db_pw}}
@@ -57,7 +56,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
 usage: |
   Pretix 是一个开源的票务与活动管理平台，支持多活动、多票种、
   订单管理、check-in 与报表，本包为官方社区版镜像（pretix/standalone）。

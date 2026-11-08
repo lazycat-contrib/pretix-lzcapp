@@ -1,0 +1,41 @@
+params:
+  - id: admin_email
+    type: string
+    name: "管理员邮箱"
+    description: "初始管理员账号的登录邮箱（建号时使用）"
+    default_value: "admin@example.com"
+    optional: false
+  - id: pt_pw
+    type: secret
+    name: "管理员密码"
+    description: "初始管理员账号的密码（已预置随机值）"
+    default_value: "kQ7wVn2xRpBm8sTz"
+    optional: false
+  - id: db_pw
+    type: secret
+    name: "数据库密码"
+    description: "PostgreSQL 数据库密码（已预置随机值，应用自动使用）"
+    default_value: "Ym3NqLd8RcXw6FhJ"
+    optional: false
+
+locales:
+  zh:
+    admin_email:
+      name: "管理员邮箱"
+      description: "初始管理员账号的登录邮箱（建号时使用）"
+    pt_pw:
+      name: "管理员密码"
+      description: "初始管理员账号的密码（已预置随机值）"
+    db_pw:
+      name: "数据库密码"
+      description: "PostgreSQL 数据库密码（已预置随机值，应用自动使用）"
+  en:
+    admin_email:
+      name: "Admin email"
+      description: "Login email of the initial admin account"
+    pt_pw:
+      name: "Admin password"
+      description: "Initial admin account password (pre-filled with random value)"
+    db_pw:
+      name: "Database password"
+      description: "PostgreSQL password (pre-filled with a random value, used automatically)"

@@ -1,0 +1,76 @@
+application:
+  subdomain: pretix
+  multi_instance: false
+  # 自带完整账号体系，但前台不开放自助注册；管理员账号由首启自动创建
+  # （createsuperuser --noinput，凭据注入），参考 wiki-go/trailbase 判例
+  # 不加 public_path，由应用登录页 + 平台入口鉴权共同防护。
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://pretix:80/
+
+services:
+  pretix:
+    # upstream: docker.io/pretix/standalone:2026.9.0
+    image: docker.1ms.run/pretix/standalone:2026.9.0
+    environment:
+      - TZ=Asia/Shanghai
+      - HOME=/pretix
+      - DATA_DIR=/data/
+      - DJANGO_SETTINGS_MODULE=production_settings
+      - AUTOMIGRATE=yes
+      - PRETIX_PRETIX_URL=https://{{.S.AppDomain}}
+      - PRETIX_DATABASE_BACKEND=postgresql
+      - PRETIX_DATABASE_NAME=pretix
+      - PRETIX_DATABASE_USER=pretix
+      - PRETIX_DATABASE_PASSWORD={{PASSWORD_db_pw}}
+      - PRETIX_DATABASE_HOST=pretix-db
+      - PRETIX_DATABASE_PORT=5432
+      - PRETIX_PRETIX_CURRENCY=EUR
+      - DJANGO_SUPERUSER_PASSWORD={{PASSWORD_pt_pw}}
+    binds:
+      - /lzcapp/var/data:/data
+    entrypoint: /bin/bash
+    command:
+      - /lzcapp/entrypoint.sh
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:80/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+    depends_on:
+      - pretix-db
+  pretix-db:
+    # upstream: library/postgres:17.2
+    image: docker.1ms.run/library/postgres:17.2
+    environment:
+      - POSTGRES_USER=pretix
+      - POSTGRES_PASSWORD={{PASSWORD_db_pw}}
+      - POSTGRES_DB=pretix
+      - TZ=Asia/Shanghai
+    binds:
+      - /lzcapp/var/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d pretix -U pretix"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+usage: |
+  Pretix 是一个开源的票务与活动管理平台，支持多活动、多票种、
+  订单管理、check-in 与报表，本包为官方社区版镜像（pretix/standalone）。
+
+  使用方法：
+  1. 打开应用，用部署参数中的管理员邮箱与密码登录后台 /control，
+     登录后请立即在设置中修改密码。
+  2. 数据库密码已预置随机值，无需手动填写。
+  3. 数据存放在 /lzcapp/var/data。
+  4. 单站模式下前台商店与后台均在应用入口内。
+
+  说明：
+  - 本包未做实机验证，功能以官方文档为准：https://docs.pretix.eu/
+  - 许可为 AGPL-3.0 并附 Section 7 附加条款（禁 SaaS 化使用、
+    须保留页面 attribution），本包未修改源码、随包附带许可全文，
+    详见 /package-licenses/。

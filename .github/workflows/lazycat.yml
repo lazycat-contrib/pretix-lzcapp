@@ -13,4 +13,5 @@ jobs:
     with:
       operation: auto
       config: .github/lazycat-action.yml
+      toolchains: docker
       versioned-release-asset: true

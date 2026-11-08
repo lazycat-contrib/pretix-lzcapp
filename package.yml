@@ -1,50 +1,18 @@
-format_version: 3
-package:
-  name: "Pretix"
-  slug: pretix
-  app_id: pretix
-  version: 2026.9.0
-  author: ramielcreations
-  category: developer_tools
-  tagline: "开源的票务与活动管理平台"
-  tags: [ticketing, events, python]
-  license: AGPL-3.0
-  description: |
-    Pretix 是一个功能完整的开源票务平台，支持多活动、多票种、
-    订单管理、check-in、报表等功能，由 pretix GmbH 维护。
-
-update:
-  allow_downgrade: false
-  targets:
-    - id: pretix
-      target: service
-      service: pretix
-      source: pretix/standalone
-      channel: stable
-      sort: semver
-      tag_regex: ^[0-9]+[.][0-9]+[.][0-9]+$
-      delivery:
-        mode: mirror
-        require_digest_match: true
-    - id: postgres
-      target: service
-      service: pretix-db
-      source: library/postgres
-      channel: custom
-      sort: semver
-      tag_regex: ^1[67][.][0-9]+$
-      version_regex: ^(?P<version>1[67][.][0-9]+)$
-      version_template: "{version}.0"
-      delivery:
-        mode: mirror
-        require_digest_match: true
-release:
-  use_github_release_notes: true
-  store_changelog_format: plain
-stores:
-  official:
-    enabled: false
-  private:
-    enabled: false
-    name: pretix
-    skip_if_version_exists: true
+package: community.lazycat.app.pretix
+name: Pretix
+version: 2026.9.0
+description: "Open-source event ticketing platform: multi-event, ticket types, orders, check-in and reports."
+min_os_version: "1.5.0"
+homepage: https://pretix.eu
+author: ramielcreations
+license: AGPL-3.0
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: Pretix
+    description: "功能完整的开源票务平台：多活动、多票种、订单管理、check-in 与报表。"
+  en:
+    name: Pretix
+    description: "Open-source event ticketing platform: multi-event, ticket types, orders, check-in and reports."

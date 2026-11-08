@@ -1,7 +1,52 @@
+version: 1
+project:
+  root: .
+  build_config: lzc-build.yml
+  package_file: package.yml
+  output: dist/application.lpk
+  target_arch: amd64
 update:
-  targets:
-    - pretix
-    - postgres
+  strategy: publish
+  allow_downgrade: false
+  version_source:
+    type: image
+    image: pretix
 build:
   toolchains:
     - kind: docker
+  run_buildscript: false
+images:
+  # pretix version tags are date-form three-segment (2026.9.0), semver parses fine
+  - id: pretix
+    target: service
+    service: pretix
+    source: pretix/standalone
+    channel: stable
+    sort: semver
+    tag_regex: ^[0-9]+[.][0-9]+[.][0-9]+$
+    delivery:
+      mode: mirror
+      require_digest_match: true
+  # postgres tags are two-segment (17.2): custom + version_regex + template pads to three
+  - id: postgres
+    target: service
+    service: pretix-db
+    source: library/postgres
+    channel: custom
+    sort: semver
+    tag_regex: ^1[67][.][0-9]+$
+    version_regex: ^(?P<version>1[67][.][0-9]+)$
+    version_template: "{version}.0"
+    delivery:
+      mode: mirror
+      require_digest_match: true
+release:
+  use_github_release_notes: true
+  store_changelog_format: plain
+stores:
+  official:
+    enabled: false
+  private:
+    enabled: false
+    name: pretix
+    skip_if_version_exists: true
